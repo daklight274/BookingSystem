@@ -2,12 +2,21 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-// Load cấu hình routing từ ocelot.json
-builder.Configuration
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-// Đăng ký Ocelot
+// Load ocelot config theo môi trường
+// Development: localhost:5001/5002/5003
+// Production (Docker): room-service/booking-service/payment-service
+builder.Configuration
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+    .AddJsonFile(
+        $"ocelot.{builder.Environment.EnvironmentName}.json",
+        optional: true,
+        reloadOnChange: true);
+
 builder.Services.AddOcelot(builder.Configuration);
+builder.Services.AddCors(opt =>
+    opt.AddDefaultPolicy(p =>
+        p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -15,12 +24,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS — cho phép frontend gọi qua gateway
-builder.Services.AddCors(opt =>
-    opt.AddDefaultPolicy(p =>
-        p.AllowAnyOrigin()
-         .AllowAnyMethod()
-         .AllowAnyHeader()));
 
 var app = builder.Build();
 

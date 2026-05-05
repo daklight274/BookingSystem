@@ -53,6 +53,74 @@ services:
       MSSQL_PID: "Developer"                    # bản miễn phí, không dùng production
     volumes:
       - db-payment-data:/var/opt/mssql
+
+   # ── Application Services ───────────────────────
+   room-service:
+    build:
+      context: .
+      dockerfile: src/Services/BookingSystem.RoomService/Dockerfile
+    container_name: booking-room-service
+    ports: ["5001:80"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__RoomDb: "Server=db-room;Database=RoomServiceDb;User Id=sa;Password=@??Anhquang4mat2002??@;TrustServerCertificate=True"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-room:
+        condition: service_started
+
+   booking-service:
+    build:
+      context: .
+      dockerfile: src/Services/BookingSystem.BookingService/Dockerfile
+    container_name: booking-booking-service
+    ports: ["5002:80"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__BookingDb: "Server=db-booking;Database=BookingServiceDb;User Id=sa;Password=@??Anhquang4mat2002??@;TrustServerCertificate=True"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-booking:
+        condition: service_started
+
+   payment-service:
+    build:
+      context: .
+      dockerfile: src/Services/BookingSystem.PaymentService/Dockerfile
+    container_name: booking-payment-service
+    ports: ["5003:80"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__PaymentDb: "Server=db-payment;Database=PaymentServiceDb;User Id=sa;Password=@??Anhquang4mat2002??@;TrustServerCertificate=True"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-payment:
+        condition: service_started
+
+   api-gateway:
+    build:
+      context: .
+      dockerfile: src/BookingSystem.ApiGateway/Dockerfile
+    container_name: booking-api-gateway
+    ports: ["5000:80"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on:
+      - room-service
+      - booking-service
+      - payment-service
       
       
 volumes:
