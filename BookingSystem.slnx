@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="D:/hi/BookingSystem/src/BookingSystem.ApiGateway/BookingSystem.ApiGateway.csproj" />
+  <Project Path="D:/hi/BookingSystem/src/BookingSystem.Shared/BookingSystem.Shared.csproj" />
+  <Project Path="D:/hi/BookingSystem/src/Services/BookingSystem.RoomService/BookingSystem.RoomService.csproj" />
+  <Project Path="src/Services/BookingSystem.BookingService/BookingSystem.BookingService.csproj" Id="bbccf416-a3b3-4c0b-ad4e-1ed3f7a69bfb" />
+  <Project Path="src/Services/BookingSystem.PaymentService/BookingSystem.PaymentService.csproj" Id="b90a2bc0-5e28-4486-a356-653568667814" />
+</Solution>

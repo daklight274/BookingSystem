@@ -1,0 +1,61 @@
+﻿version: "3.9"
+services:
+   rabbitmq:
+    image: rabbitmq:3-management
+    container_name: booking-rabbitmq
+    ports:
+      - "5672:5672"    # AMQP port - services kết nối vào đây
+      - "15672:15672"  # Management UI - xem queues tại localhost:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+   db-room:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: booking-db-room
+    restart: unless-stopped
+    ports:
+      - "1431:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "@??Anhquang4mat2002??@"   # min 8 ký tự, có chữ hoa + số + ký tự đặc biệt
+      MSSQL_PID: "Developer"                    # bản miễn phí, không dùng production
+    volumes:
+      - db-room-data:/var/opt/mssql 
+
+   db-booking:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: booking-db-booking
+    restart: unless-stopped
+    ports:
+      - "1432:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "@??Anhquang4mat2002??@"   # min 8 ký tự, có chữ hoa + số + ký tự đặc biệt
+      MSSQL_PID: "Developer"                    # bản miễn phí, không dùng production
+    volumes:
+      - db-booking-data:/var/opt/mssql
+
+   db-payment:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: booking-db-payment
+    restart: unless-stopped
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "@??Anhquang4mat2002??@"   # min 8 ký tự, có chữ hoa + số + ký tự đặc biệt
+      MSSQL_PID: "Developer"                    # bản miễn phí, không dùng production
+    volumes:
+      - db-payment-data:/var/opt/mssql
+      
+      
+volumes:
+  db-room-data:
+  db-booking-data:
+  db-payment-data:
